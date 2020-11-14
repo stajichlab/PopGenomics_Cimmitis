@@ -43,7 +43,7 @@ if [ $N -gt $MAX ]; then
 fi
 
 IFS=,
-tail -n +2 $SAMPFILE | sed -n ${N}p | while read STRAIN FILEBASE
+tail -n +2 $SAMPFILE | sed -n ${N}p | while read FILEBASE STRAIN BioSample Center Experiment Project Organism
 do
 
   # BEGIN THIS PART IS PROBABLY PROJECT SPECIFIC
