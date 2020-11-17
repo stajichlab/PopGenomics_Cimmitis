@@ -37,13 +37,14 @@ fi
 hostname
 date
 IFS=,
-tail -n +2 $SAMPFILE | sed -n ${N}p | while read SAMPID STRAIN
+tail -n +2 $SAMPFILE | sed -n ${N}p | while read SAMPID STRAIN BioSample Center Experiment Project Organism
 do
   # BEGIN THIS PART IS PROJECT SPECIFIC LIKELY
   # END THIS PART IS PROJECT SPECIFIC LIKELY
   echo "STRAIN is $STRAIN"
   GVCF=$GVCFFOLDER/$STRAIN.g.vcf
   ALNFILE=$ALNFOLDER/$STRAIN.$HTCEXT
+  echo "GVCF is $GVCF"
   if [ -s $GVCF.gz ]; then
     echo "Skipping $STRAIN - Already called $STRAIN.g.vcf.gz"
     exit

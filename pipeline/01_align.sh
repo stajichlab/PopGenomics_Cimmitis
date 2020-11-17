@@ -5,7 +5,6 @@ module load samtools/1.11
 module load picard
 module load gatk/4
 module load java/13
-
 MEM=32g
 
 TOPOUTDIR=tmp
@@ -95,4 +94,15 @@ do
       rm -f $(echo $DDFILE | sed 's/bam$/bai/')
     fi
   fi #FINALFILE created or already exists
+  FQ=$(basename $FASTQEXT .gz)
+  UMAP=$UNMAPPED/${STRAIN}.$FQ
+  UMAPSINGLE=$UNMAPPED/${STRAIN}_single.$FQ
+  echo "$UMAP $UMAPSINGLE $FQ"
+  module load BBMap
+  if [ ! -f $UMAP ]; then
+	samtools fastq -f 4 --threads 4 -N -s $UMAPSINGLE -o $UMAP $FINALFILE
+	pigz $UMAPSINGLE
+	repair.sh in=$UMAP out=$UMAP.gz
+	unlink $UMAP
+  fi
 done
