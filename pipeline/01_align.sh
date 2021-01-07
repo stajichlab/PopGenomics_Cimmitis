@@ -12,6 +12,7 @@ TOPOUTDIR=tmp
 if [ -f config.txt ]; then
   source config.txt
 fi
+mkdir -p $UNMAPPED $UNMAPPEDASM
 if [ -z $REFGENOME ]; then
   echo "NEED A REFGENOME - set in config.txt and make sure 00_index.sh is run"
   exit
