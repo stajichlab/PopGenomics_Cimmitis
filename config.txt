@@ -1,8 +1,11 @@
 GENOMEFOLDER=genome
 REFGENOME=genome/FungiDB-49_CimmitisRS_Genome.fasta
 GENOMENAME=CimmRS
+REPEATGFF=FungiDB-49_CimmitisRS_Genome.repeat_masker.gff3
 SAMPFILE=samples.csv
 FASTQFOLDER=input
+UNMAPPED=unmapped
+UNMAPPEDASM=unmapped_asm
 FASTQEXT=fastq.gz
 ASMEXT=fasta
 ALNFOLDER=aln
@@ -25,3 +28,4 @@ SNPEFFOUT=snpEff
 snpEffConfig=snpEff.config
 SNPEFFGENOME=CimmitisRS_FungiDB_49
 GFFGENOME=FungiDB-49_CimmitisRS.gff
+POPYAML=population_sets.yaml
