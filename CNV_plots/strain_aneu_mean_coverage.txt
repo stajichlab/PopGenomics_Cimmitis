@@ -1,0 +1,1 @@
+CHR	Strain	mean_depth	chrlen
