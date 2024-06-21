@@ -1,28 +1,16 @@
 #!/usr/bin/bash
-#SBATCH --mem 24G --nodes 1 --ntasks 2 -J slice.GVCFGeno --out logs/GVCFGenoGATK4.slice_%a.log  -p intel
+#SBATCH --mem 24G --nodes 1 --ntasks 2 -J slice.GVCFGeno --out logs/GVCFGenoGATK4.slice_%a.log  -p intel -a 1-7
 #--time 48:00:00
 hostname
 MEM=24g
-module unload java
 module load picard
 module load gatk/4
-module load java/13
 module load bcftools
 module load parallel
+module load workspace/scratch
 
 source config.txt
-
-declare -x TEMPDIR=$TEMP/$USER/$$
-
-cleanup() { 
-	#echo "rm temp is: $TEMPDIR"
-	rm -rf $TEMPDIR
-	rmdir $TEMPDIR
-}
-
-# Set trap to ensure cleanupis stopped
-trap "cleanup; rm -rf $TEMPDIR; exit" SIGHUP SIGINT SIGTERM EXIT
-
+TEMPDIR=$SCRATCH
 GVCF_INTERVAL=1
 N=${SLURM_ARRAY_TASK_ID}
 
@@ -168,6 +156,3 @@ if [[ ! -f $SELECTINDEL.gz || $FILTERINDEL.gz -nt $SELETINDEL.gz ]]; then
     tabix $SELECTINDEL.gz
 fi
 
-if [ -d $TEMPDIR ]; then
-	rmdir $TEMPDIR
-fi

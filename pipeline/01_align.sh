@@ -1,9 +1,10 @@
 #!/bin/bash
-#SBATCH -N 1 -n 1 -c 16 --mem 16gb --out logs/bwa.%a.log --time 8:00:00
+#SBATCH -p short -N 1 -n 1 -c 16 --mem 16gb --out logs/bwa.%a.log --time 8:00:00
 module load bwa
 module load samtools
 module load picard
 module load gatk/4
+module load workspace/scratch
 MEM=32g
 
 TOPOUTDIR=tmp
@@ -11,6 +12,7 @@ TOPOUTDIR=tmp
 if [ -f config.txt ]; then
   source config.txt
 fi
+TEMP=$SCRATCH
 mkdir -p $UNMAPPED $UNMAPPEDASM
 if [ -z $REFGENOME ]; then
   echo "NEED A REFGENOME - set in config.txt and make sure 00_index.sh is run"
