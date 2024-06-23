@@ -1,7 +1,9 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -l
 #SBATCH -p intel --mem 64gb -N 1 -n 4 --out logs/concat_vcf.log -p short
 
 module load bcftools
+module load yq
+module load cyvcf2
 
 CPU=1
 if [ $SLURM_CPUS_ON_NODE ]; then
@@ -21,11 +23,26 @@ if [ -z $SLICEVCF ]; then
 	echo "Need to define SLICEVCF in config.txt"
 	exit
 fi
-IN=$SLICEVCF/$PREFIX
-mkdir $FINALVCF
-for TYPE in SNP INDEL
+if [[ -z $POPYAML || ! -s $POPYAML ]]; then
+	echo "Cannot find \$POPYAML variable - set in config.txt"
+	exit
+fi
+IN=$SLICEVCF
+mkdir -p $FINALVCF
+
+for POPNAME in $(yq eval '.Populations | keys' $POPYAML | perl -p -e 's/^\s*\-\s*//')
 do
-  	OUT=$FINALVCF/$PREFIX.$TYPE.combined_selected.vcf.gz
-	bcftools concat -Oz -o $OUT --threads $CPU $IN.*.$TYPE.selected.vcf.gz
-	tabix $OUT
-done
+  for TYPE in SNP INDEL
+  do
+     OUT=$FINALVCF/$PREFIX.$POPNAME.$TYPE.combined_selected.vcf.gz
+     QC=$FINALVCF/$PREFIX.$POPNAME.$TYPE.combined_selected.QC.tsv
+     if [ ! -s $OUT ];  then
+     	bcftools concat -Oz -o $OUT --threads $CPU $IN/$POPNAME/${PREFIX}.*.${TYPE}.selected.vcf.gz
+     	tabix $OUT
+     fi
+     if [[ ! -s $QC || $OUT -nt $QC ]]; then
+     	./scripts/vcf_QC_report.py --vcf $OUT -o $QC
+     fi
+
+   done
+ done

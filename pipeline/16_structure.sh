@@ -31,6 +31,10 @@ do
     for TYPE in SNP
     do
 	VCF=$FINALVCF/$PREFIX.$POPNAME.$TYPE.combined_selected.vcf.gz
+	if [ ! -f $VCF ]; then
+		echo "Cannot find VCF $VCF"
+		exit
+	fi
 	plink --vcf $VCF --const-fid --allow-extra-chr  --vcf-idspace-to _ --keep-allele-order --make-bed --out $OUT/$PREFIX.$POPNAME.$TYPE
 	K=${SLURM_ARRAY_TASK_ID}
 	parallel -j 8 structure.py -K {} --seed 121 --input=$OUT/$PREFIX.$POPNAME.$TYPE --output=$OUT/$PREFIX.$POPNAME.$TYPE ::: $(seq 8)
